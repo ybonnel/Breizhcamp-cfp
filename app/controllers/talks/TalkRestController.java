@@ -114,7 +114,16 @@ public class TalkRestController extends Controller {
         Form<Talk> talkForm = form(Talk.class).bindFromRequest();
 
         if (talkForm.hasErrors()) {
-            return badRequest(toJson(TransformValidationErrors.transform(talkForm.errors())));
+            // Has only speaker error?
+            boolean onlySpeakerError = true;
+            for (String key : talkForm.errors().keySet()) {
+                if (!key.startsWith("speaker")) {
+                    onlySpeakerError = false;
+                }
+            }
+            if (!onlySpeakerError) {
+                return badRequest(toJson(TransformValidationErrors.transform(talkForm.errors())));
+            }
         }
 
         Talk formTalk = talkForm.get();
